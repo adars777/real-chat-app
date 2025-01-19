@@ -15,7 +15,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "https://real-chat-frontend.onrender.com/",
+    origin: "http://real-chat-frontend.onrender.com/",
     credentials: true,
   })
 );
