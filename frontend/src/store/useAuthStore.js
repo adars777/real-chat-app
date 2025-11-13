@@ -3,34 +3,28 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import { io } from "socket.io-client";
 
-// const BASE_URL = "http://real-chat-app-w83z.onrender.com/";
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
   isUpdatingProfile: false,
-  isCheckingAuth: true,
+  ischeckingAuth: true,
   onlineUsers: [],
   socket: null,
 
   checkAuth: async () => {
     try {
-      console.log("🔍 Checking authentication...");
       const res = await axiosInstance.get("/auth/check");
-      console.log("✅ Auth check successful, user:", res.data);
-      set({ authUser: res.data });
       get().connectSocket();
+      set({ authUser: res.data });
     } catch (error) {
-      console.error("❌ Auth check failed:", {
-        status: error.response?.status,
-        message: error.response?.data?.message,
-        error: error.message,
-      });
+      console.log(`Error in checkAuth:`, error);
+
       set({ authUser: null });
     } finally {
       set({
-        isCheckingAuth: false,
+        ischeckingAuth: false,
       });
     }
   },
@@ -55,7 +49,7 @@ export const useAuthStore = create((set, get) => ({
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
       toast.success("Logged In Successfully");
-      get().connectSocket();
+      get().conectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
     } finally {
@@ -94,7 +88,7 @@ export const useAuthStore = create((set, get) => ({
     const { authUser } = get();
     if (!authUser || get().socket?.connected) return;
 
-    const socket = io({
+    const socket = io(BASE_URL, {
       query: {
         userId: authUser._id,
       },
